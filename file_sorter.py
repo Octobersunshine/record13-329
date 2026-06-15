@@ -32,6 +32,8 @@ EXTENSION_MAP = build_extension_map()
 
 def categorize_file(filepath):
     ext = Path(filepath).suffix.lower()
+    if not ext:
+        return None
     return EXTENSION_MAP.get(ext, "其他")
 
 
@@ -69,6 +71,11 @@ def sort_directory(source_dir, move_files=True, dry_run=False, verbose=False):
 
         if os.path.isfile(entry_path):
             category = categorize_file(entry_path)
+            if category is None:
+                if verbose:
+                    print(f"跳过 (无扩展名): {entry}")
+                continue
+
             target_dir = os.path.join(source_dir, category)
             target_path = os.path.join(target_dir, entry)
             target_path = get_unique_dest(target_path)
